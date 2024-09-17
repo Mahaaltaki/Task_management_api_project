@@ -12,10 +12,10 @@ class projectService
      * @param Request $request 
      * @return array containing paginated project resources.
      */
-    public function getAllProjects(ProjectRequest $request): array
+    public function getAllProjects(): array
     {
         // query builder instance for the project model
-        $query = Project::with('users')->get();
+        $query = Project::with('users');
         // Paginate the results
         $projects = $query->paginate(10);
 
@@ -29,12 +29,12 @@ class projectService
      * @return array array containing the created project resource.
      * @throws \Exception
      * Throws an exception if the project creation fails */
-    public function storeProject(ProjectRequest $request ,array $data): array
+    public function storeProject(ProjectRequest $request): array
     {
         // Create a new project
         $project = Project::create([
-            'name' => $data['name'],
-            'description' => $data['description'],
+            'name' => $request['name'],
+            'description' => $request['description'],
         ]);
         $project->users()->attach($request->user_id, [
             'role' => $request->role,
@@ -92,11 +92,7 @@ class projectService
             'title' => $data['title'] ?? $request->title,
             'description' => $data['description'] ?? $request->description,
         ]));
-        $request->users()->updateExistingPivot($request->user_id, [
-            'role' => $request->role,
-            'hours' => $request->hours,
-            'last_activity' => now(),
-        ]);
+        
         // Return the updated project as a resource
         return ProjectResource::make($request)->toArray(request());
     }

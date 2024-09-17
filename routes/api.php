@@ -27,6 +27,8 @@ Route::controller(AuthController::class)->group(function () {
 });
 Route::apiResource('/users',UserController::class);
 Route::apiResource('/tasks',TaskController::class);
+Route::apiResource('/projects',ProjectController::class);
+
 Route::get('/UsersWithTasks',[ProjectController::class,'getUsersWithTasks']);
 Route::middleware(['role:manager'])->group(function () {
     Route::post('/tasks', 'TaskController@store')->name('tasks.store'); // إضافة المهام

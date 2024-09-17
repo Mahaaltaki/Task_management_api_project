@@ -6,10 +6,11 @@ namespace App\Models;
 use Session;
 use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -48,13 +49,46 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password'=> 'hashed',
     ];
+    
+    
+    //to calculate the hours by user 
+    public function calculateHours($sessionId)
+    {
+        $session = Session::find($sessionId);
+        if (!$session) {
+            throw new \Exception('Session not found.');
+        }
+
+        $startTime = new Carbon($session->start_time);
+        $endTime = new Carbon($session->end_time);
+        $duration = $startTime->diff($endTime);
+        return $duration->h . 'h ' . $duration->i . 'm';
+    }
     //define the relationship between the user and projects
     public function projects()
 {
     return $this->belongsToMany(Project::class)->withPivot('role', 'hours', 'last_activity')->withTimestamps();
 }
 
-    /**
+public function tasks(){
+    return $this->hasManyThrough(Task::class,Project::class);
+}
+ // update the last active by user
+ public function touchOnline()
+ {
+     $this->last_login = Auth::user()->email_verified_at;
+     
+     $this->last_logout=$this->freshTimestamp();
+     $result=strtotime($this->last_logout) - strtotime($this->last_login);
+    $result2=$result+strtotime($this->projects->pivot->hours);
+     return $result2;
+ }
+
+ 
+
+ 
+
+/**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
@@ -72,16 +106,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    //to calculate the hours by user 
-public function calculateHours(){
-    $session=Session::find($session->id);
-    $startTime=new Carbon($session->start_time);
-    $endTime=new Carbon($session->end_time);
-    $duration = $startTime->diff($endTime);
-    return $duration->h.$duration->i.$duration;
-    
-}
-public function tasks(){
-    return $this->hasManyThrough(Task::class,Project::class);
-}
 }

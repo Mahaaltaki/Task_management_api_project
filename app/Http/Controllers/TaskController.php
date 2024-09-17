@@ -34,10 +34,10 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(TaskRequest $request )
+    public function store(TaskRequest $request ,array $data)
 {
     try {
-        $task = $this->taskService->storeTask($request);
+        $task = $this->taskService->storeTask($request,$data);
         return $this->successResponse($task, 'The task stored successfully', 201);
     } catch (\Exception $e) {
         return $this->handleException($e, 'Error storing the task');

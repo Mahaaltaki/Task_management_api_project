@@ -19,7 +19,9 @@ class Project extends Model
         'description',
     ];
     public function users(){
-        return $this->belongsToMany(User::class)->withPivot('role', 'hours', 'last_activity')->withTimestamps();;
+        return $this->belongsToMany(User::class)
+        ->withPivot('role', 'hours', 'last_activity')
+        ->withTimestamps();;
     }
     public function tasks()
     {
@@ -41,4 +43,5 @@ class Project extends Model
         return $this->hasOne('Task::class')->ofMany('priority','high')
         ->where('title','like','%','$titleCondition','%');
     }    
+    
 }

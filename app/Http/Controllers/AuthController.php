@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
-use App\Http\Requests\UserRequest;
+use Validator;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
-use Validator;
+use PHPOpenSourceSaver\JWTAuth\Contracts\Providers\Auth;
 class AuthController extends Controller
 {
 
