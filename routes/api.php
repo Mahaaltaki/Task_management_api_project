@@ -25,18 +25,18 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh', 'refresh');
 
 });
-Route::apiResource('/users',UserController::class);
-Route::apiResource('/tasks',TaskController::class);
-Route::apiResource('/projects',ProjectController::class);
+// Route::apiResource('/users',UserController::class);
+// Route::apiResource('/tasks',TaskController::class);
+// Route::apiResource('/projects',ProjectController::class);
 
 Route::get('/UsersWithTasks',[ProjectController::class,'getUsersWithTasks']);
 Route::middleware(['role:manager'])->group(function () {
-    Route::post('/tasks', 'TaskController@store')->name('tasks.store'); // إضافة المهام
-    Route::put('/tasks/{task}', 'TaskController@update')->name('tasks.update'); // تعديل المهام
+    Route::post('/tasks', 'TaskController@store')->name('tasks.store')->middleware('hours'); // إضافة المهام
+    Route::put('/tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('hours'); // تعديل المهام
 });
 Route::middleware(['role:developer'])->group(function () {
-    Route::patch('/tasks/{task}/status', 'TaskController@updateStatus')->name('tasks.updateStatus');
+    Route::patch('/tasks/{task}/status', 'TaskController@updateStatus')->name('tasks.updateStatus')->middleware('hours');
 });
 Route::middleware(['role:tester'])->group(function () {
-    Route::post('/tasks/{task}/notes', 'TaskController@addNote')->name('tasks.addNote');
+    Route::post('/tasks/{task}/notes', 'TaskController@addNote')->name('tasks.addNote')->middleware('hours');
 });

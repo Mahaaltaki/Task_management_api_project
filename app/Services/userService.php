@@ -38,6 +38,12 @@ class userService
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->password = Hash::make($data['password']);
+
+            $user->projects()->attach($user->user_id, [
+                'role' => $user->role,
+                
+                'last_activity' => now(),
+            ]);
             
             $user->save();
         // if the user was created successfully

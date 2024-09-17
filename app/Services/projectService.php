@@ -38,7 +38,7 @@ class projectService
         ]);
         $project->users()->attach($request->user_id, [
             'role' => $request->role,
-            'hours' => $request->hours,
+            
             'last_activity' => now(),
         ]);
 
